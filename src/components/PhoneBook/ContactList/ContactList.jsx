@@ -1,13 +1,22 @@
-import PropTyps from 'prop-types';
+import { useSelector, useDispatch } from 'react-redux';
 import { ImMobile } from 'react-icons/im';
 import { IconContext } from 'react-icons';
+import { deleteContact } from 'redux/contactsSlice';
+import { getFilteredContacts } from 'redux/selectors';
 
 import styles from './contactList.module.scss';
 
-const ContactList = ({ contacts, remuveContact }) => {
+const ContactList = () => {
+  const filterContacts = useSelector(getFilteredContacts);
+  const dispatch = useDispatch();
+
+  const removeContact = id => {
+    dispatch(deleteContact(id));
+  };
+
   return (
     <ul className={styles.contactsList}>
-      {contacts.map(contact => {
+      {filterContacts.map(contact => {
         const { id, name, number } = contact;
         return (
           <li key={id} className={styles.contactList}>
@@ -20,7 +29,7 @@ const ContactList = ({ contacts, remuveContact }) => {
             <button
               type="button"
               className={styles.button}
-              onClick={() => remuveContact(id)}
+              onClick={() => removeContact(id)}
             >
               Delete
             </button>
@@ -32,18 +41,3 @@ const ContactList = ({ contacts, remuveContact }) => {
 };
 
 export default ContactList;
-
-ContactList.defaultProps = {
-  contacts: [],
-};
-
-ContactList.propTyps = {
-  remuveContact: PropTyps.func.isRequired,
-  contacts: PropTyps.arrayOf(
-    PropTyps.shape({
-      id: PropTyps.string.isRequired,
-      name: PropTyps.string.isRequired,
-      number: PropTyps.string.isRequired,
-    })
-  ),
-};

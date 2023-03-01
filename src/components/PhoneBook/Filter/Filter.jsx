@@ -1,8 +1,17 @@
-import PropTypes from 'prop-types';
+import { useSelector, useDispatch } from 'react-redux';
+import { getFilter } from 'redux/selectors';
+import { setFilter } from 'redux/filterSlice';
 
 import styles from './filter.module.scss';
 
-const Filter = ({ handleFilter, filter }) => {
+const Filter = () => {
+  const filter = useSelector(getFilter);
+  const dispatch = useDispatch();
+
+  const handleFilter = ({ target }) => {
+    dispatch(setFilter(target.value));
+  };
+
   return (
     <div className={styles.filter}>
       <label className={styles.label}>
@@ -24,8 +33,3 @@ const Filter = ({ handleFilter, filter }) => {
 };
 
 export default Filter;
-
-Filter.propTypes = {
-  handleFilter: PropTypes.func.isRequired,
-  filter: PropTypes.string.isRequired,
-};

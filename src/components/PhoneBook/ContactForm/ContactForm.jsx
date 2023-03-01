@@ -1,11 +1,20 @@
 import { useState } from 'react';
-import PropTypes from 'prop-types';
+import { useSelector, useDispatch } from 'react-redux';
+
+import Notiflix from 'notiflix';
+
+import { addContacts } from 'redux/contactsSlice';
+
+import { getAllContacts } from 'redux/selectors';
 
 import styles from './contactForm.module.scss';
 
-const ContactForm = ({ onSubmit }) => {
+const ContactForm = () => {
   const [name, setName] = useState('');
   const [number, setNumder] = useState('');
+
+  const contacts = useSelector(getAllContacts);
+  const dispatch = useDispatch();
 
   const handleChange = ({ target }) => {
     switch (target.name) {
@@ -20,9 +29,24 @@ const ContactForm = ({ onSubmit }) => {
 
   const handleSubmit = e => {
     e.preventDefault();
-    onSubmit(name, number);
+    if (isDublicate(name)) {
+      Notiflix.Notify.failure(`${name} is olready in contacts`);
+      return;
+    }
+
+    dispatch(addContacts({ name, number }));
     setName('');
     setNumder('');
+  };
+
+  const isDublicate = name => {
+    const normalizedName = name.toLocaleLowerCase();
+
+    const result = contacts.find(({ name }) => {
+      return name.toLocaleLowerCase() === normalizedName;
+    });
+
+    return Boolean(result);
   };
 
   return (
@@ -63,7 +87,3 @@ const ContactForm = ({ onSubmit }) => {
 };
 
 export default ContactForm;
-
-ContactForm.propTypes = {
-  onSubmit: PropTypes.func.isRequired,
-};
